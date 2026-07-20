@@ -191,7 +191,7 @@ route.post("/", async (req, res) => {
 
     const rawNote = RawNoteSchema.parse({
       note_id: nanoid(),
-      user_id: userId || "",
+      user_id: userId,
       title,
       content: content ?? "",
     });
@@ -326,64 +326,15 @@ route.patch("/:id/archive", async (req, res) => {
   }
 });
 
-route.get("/:id/pdf", async (req, res) => {
+route.post("/content", async (req, res) => {
   try {
-    const userId = req.user?.id;
-    const noteId = req.params.id;
+    const note = NoteSchema.parse(req.body);
+    const markdownContent = note.content || "";
 
-    const note: Note = await db("notes")
-      .where({ user_id: userId, note_id: noteId })
-      .first();
-
-    if (!note) {
-      return res.status(404).json({ error: "Заметка не найдена" });
-    }
-
-    const htmlContent = markdownToHtml(note.content);
+    const htmlContent = markdownToHtml(markdownContent);
     const sanitizedHtml = sanitizeHtml(htmlContent, MARKDOWN_CLEAN_OPTIONS);
 
-    const fullHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>${PDF_NOTE_CSS}</style>
-      </head>
-      <body>
-        <h1 class="pdf-title">${note.title}</h1>
-        <div class="pdf-content">${sanitizedHtml}</div>
-      </body>
-      </html>
-    `;
-
-    const puppeteerCore = await import("puppeteer-core");
-    // @ts-ignore
-    const chromium = (await import("@sparticuz/chromium")).default;
-
-    const browser = await puppeteerCore.launch({
-      args: [
-        ...chromium.args,
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-gl-drawing-for-tests",
-      ],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    });
-
-    const page = await browser.newPage();
-    await page.setContent(fullHtml, { waitUntil: "domcontentloaded" });
-
-    const pdfBuffer = await page.pdf({
-      format: "A4",
-      margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
-    });
-
-    await browser.close();
-
-    res.contentType("application/pdf");
-    res.send(pdfBuffer);
+    res.status(200).send(sanitizedHtml);
   } catch (err) {
     handleError(err, res);
   }
