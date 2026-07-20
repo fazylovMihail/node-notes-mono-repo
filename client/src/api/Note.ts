@@ -208,6 +208,28 @@ async function fetchEditNote(id: NoteId, data: UpdateNote): Promise<void> {
   }
 }
 
+async function fetchEditArchiveNote(
+  id: NoteId,
+  data: UpdateNote,
+): Promise<void> {
+  try {
+    const response = await fetch(`/api/notes/${id}/archive`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error("Ошибка редактирования архивной заметки.");
+    }
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
 async function fetchNoteHtmlContent(data: Note): Promise<string> {
   try {
     const response = await fetch("/api/notes/content", {
@@ -272,6 +294,7 @@ export {
   fetchDeleteNote,
   fetchDeleteArchiveNote,
   fetchEditNote,
+  fetchEditArchiveNote,
   fetchNoteHtmlContent,
   fetchNoteDownloadPdf,
 };

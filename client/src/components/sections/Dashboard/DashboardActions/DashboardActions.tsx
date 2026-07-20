@@ -67,38 +67,35 @@ export const DashboardActions: FC<DashboardActionsProps> = memo(
               ? "Вернуть"
               : "В архив"}
         </Button>
-
-        {!isArchive &&
-          (isEdit ? (
-            <Button
-              modificators={[
-                "dashboard",
-                "dashboard-transparent",
-                "forest-wolf-transparent",
-              ]}
-              type="submit"
-              form="edit-form"
-              iconId="icon-save"
-              width={16}
-              height={16}
-              disabled={isDisabled}
-            >
-              Сохранить
-            </Button>
-          ) : (
-            <Button
-              modificators={["dashboard", "pale-gray-brown"]}
-              type="button"
-              iconId="icon-edit"
-              width={16}
-              height={16}
-              disabled={isDisabled}
-              onClick={onOpenEditForm}
-            >
-              Редактировать
-            </Button>
-          ))}
-
+        {isEdit ? (
+          <Button
+            modificators={[
+              "dashboard",
+              "dashboard-transparent",
+              "forest-wolf-transparent",
+            ]}
+            type="submit"
+            form="edit-form"
+            iconId="icon-save"
+            width={16}
+            height={16}
+            disabled={isDisabled}
+          >
+            Сохранить
+          </Button>
+        ) : (
+          <Button
+            modificators={["dashboard", "pale-gray-brown"]}
+            type="button"
+            iconId="icon-edit"
+            width={16}
+            height={16}
+            disabled={isDisabled}
+            onClick={onOpenEditForm}
+          >
+            Редактировать
+          </Button>
+        )}
         <Button
           modificators={["dashboard", "black"]}
           type="button"
@@ -110,7 +107,6 @@ export const DashboardActions: FC<DashboardActionsProps> = memo(
         >
           {isDownloadPending ? "Скачивание..." : "pdf"}
         </Button>
-
         <Button
           modificators={["dashboard", "deep-carmine"]}
           type="button"
