@@ -11,7 +11,7 @@
     "migrate:rollback": "knex migrate:rollback --knexfile knexfile.ts --compiler=ts:ts-node/register"
   },
   "dependencies": {
-    "@sparticuz/chromium": "^126.0.0",
+    "@sparticuz/chromium-min": "^126.0.0",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
