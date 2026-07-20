@@ -5,9 +5,11 @@
       "src": "server/src/server.ts",
       "use": "@vercel/node",
       "config": {
+        "maxDuration": 15,
         "includeFiles": [
           "shared/models/**",
-          "server/src/db/**"
+          "server/src/db/**",
+          "node_modules/@sparticuz/chromium/bin/**"
         ]
       }
     },
