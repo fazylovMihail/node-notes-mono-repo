@@ -5,6 +5,7 @@
       "src": "server/src/server.ts",
       "use": "@vercel/node",
       "config": {
+        "launcherType": "esm",
         "includeFiles": [
           "shared/models/**",
           "server/src/db/**"
