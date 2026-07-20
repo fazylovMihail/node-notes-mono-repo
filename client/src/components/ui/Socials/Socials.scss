@@ -1,0 +1,12 @@
+@use "@/app/styles/mixins" as *;
+@use "@/app/styles/variables" as *;
+
+.socials {
+  @include list-default;
+  display: flex;
+  column-gap: 24px;
+
+  &__item svg {
+    color: $color-forest-wolf;
+  }
+}

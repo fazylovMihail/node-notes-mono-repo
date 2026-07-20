@@ -1,0 +1,166 @@
+@use "@/app/styles/variables" as *;
+
+.btn {
+  cursor: pointer;
+  user-select: none;
+  padding: 16px 40px;
+  display: flex;
+  font-size: 16px;
+  line-height: 20px;
+  text-decoration: none;
+  background-color: transparent;
+  color: $color-black;
+  border: 1px solid $color-black;
+  border-radius: 16px;
+  transition:
+    background-color $transition-300,
+    border-color $transition-300,
+    color $transition-300;
+
+  &:hover,
+  &:focus-visible {
+    background-color: $color-deep-carmine;
+    color: $color-forest-wolf;
+    border-color: transparent;
+  }
+
+  &--without-background {
+    padding: 0;
+    font-size: 20px;
+    line-height: 26px;
+    border: none;
+    border-radius: 0;
+    color: $color-pale-gray-brown;
+    transition:
+      transform $transition-300,
+      color $transition-300;
+
+    &:hover,
+    &:focus-visible {
+      background-color: transparent;
+      color: $color-deep-carmine;
+      transform: scale(1.05);
+    }
+  }
+
+  &--search {
+    position: relative;
+    width: 20px;
+    height: 20px;
+
+    &::before {
+      content: "";
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      left: -10px;
+      top: -10px;
+    }
+  }
+
+  &--dashboard {
+    padding: 8px 24px;
+    font-size: 12px;
+    line-height: 16px;
+    text-transform: uppercase;
+    column-gap: 5px;
+    border: none;
+    border-radius: 8px;
+    transition: transform $transition-300;
+
+    &:hover,
+    &:focus-visible {
+      transform: scale(1.05);
+    }
+
+    & .btn__icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &--dashboard-left {
+    border: none;
+    transition: transform $transition-300;
+
+    &:hover,
+    &:focus-visible {
+      transform: scale(1.025);
+    }
+  }
+
+  &--forest-wolf {
+    background-color: $color-forest-wolf;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $color-forest-wolf;
+      color: $color-black;
+    }
+  }
+
+  &--pale-gray-brown {
+    background-color: $color-pale-gray-brown;
+    color: $color-forest-wolf;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $color-pale-gray-brown;
+      color: $color-forest-wolf;
+    }
+  }
+
+  &--black {
+    background-color: $color-black;
+    color: $color-forest-wolf;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $color-black;
+      color: $color-forest-wolf;
+    }
+  }
+
+  &--forest-wolf-transparent {
+    color: $color-forest-wolf;
+    border: 1px solid $color-forest-wolf;
+
+    &:hover,
+    &:focus-visible {
+      background-color: transparent;
+      color: $color-forest-wolf;
+      border: 1px solid $color-forest-wolf;
+    }
+  }
+
+  &--dashboard-transparent {
+    padding: 7px 24px;
+  }
+
+  &--dashboard-left-transparent {
+    padding: 15px 24px;
+  }
+
+  &--deep-carmine {
+    background-color: $color-deep-carmine;
+    color: $color-forest-wolf;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $color-deep-carmine;
+      color: $color-forest-wolf;
+    }
+  }
+
+  &--center {
+    justify-content: center;
+  }
+
+  &--more {
+    &:hover,
+    &:focus-visible {
+      background-color: $color-deep-carmine;
+      border-color: transparent;
+    }
+  }
+}

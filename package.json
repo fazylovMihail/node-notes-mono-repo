@@ -1,0 +1,44 @@
+{
+  "name": "99_diploma",
+  "version": "1.0.0",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "build": "cross-env NODE_ENV=production TS_NODE_COMPILER_OPTIONS=\"{\\\"module\\\":\\\"commonjs\\\",\\\"noEmit\\\":false,\\\"strict\\\":false,\\\"skipLibCheck\\\":true}\" webpack --config client/webpack.config.ts --mode production && tsc --project server/tsconfig.json",
+    "vercel-build": "npm run build",
+    "webpack:watch": "cross-env NODE_ENV=development TS_NODE_COMPILER_OPTIONS=\"{\\\"module\\\":\\\"commonjs\\\",\\\"noEmit\\\":false,\\\"strict\\\":false,\\\"skipLibCheck\\\":true}\" webpack --config client/webpack.config.ts --mode development --watch",
+    "server:watch": "cross-env NODE_ENV=development nodemon --watch server/src --ext ts --exec \"tsx --tsconfig server/tsconfig.json server/src/server.ts\"",
+    "dev": "npm run db:migrate --workspace=server && concurrently \"npm run webpack:watch\" \"npm run server:watch\""
+  },
+  "author": "Fazylov Mihail",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/dotenv-webpack": "^7.0.8",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^26.0.0",
+    "concurrently": "^10.0.3",
+    "copy-webpack-plugin": "^14.0.0",
+    "cross-env": "^10.1.0",
+    "dotenv-webpack": "^9.0.0",
+    "nodemon": "^3.1.14",
+    "ts-loader": "^9.6.2",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.9.1",
+    "tsx": "^4.23.1",
+    "typescript": "^6.0.3",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "@types/webpack-node-externals": "^3.0.4",
+    "moment": "^2.30.1",
+    "zod": "^4.4.3"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

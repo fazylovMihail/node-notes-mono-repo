@@ -1,0 +1,34 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "ISC",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "db:migrate": "knex migrate:latest --knexfile knexfile.ts",
+    "migrate:make": "knex migrate:make --knexfile knexfile.ts --compiler=ts:ts-node/register",
+    "migrate:rollback": "knex migrate:rollback --knexfile knexfile.ts --compiler=ts:ts-node/register"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "knex": "^3.2.10",
+    "markdown-it": "^14.3.0",
+    "md-to-pdf": "^5.2.5",
+    "module-alias": "^2.3.4",
+    "moment": "^2.30.1",
+    "nanoid": "^5.1.15",
+    "pg": "^8.22.0",
+    "puppeteer": "^25.3.0",
+    "sanitize-html": "^2.17.5",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/sanitize-html": "^2.16.1"
+  }
+}

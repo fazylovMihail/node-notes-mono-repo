@@ -1,0 +1,37 @@
+@use "@/app/styles/variables" as *;
+
+.select {
+  position: relative;
+
+  &:hover {
+    .select__icon {
+      color: $color-deep-carmine;
+    }
+  }
+
+  &__field {
+    cursor: pointer;
+    outline: none;
+    padding: 16px 20px;
+    width: 100%;
+    background-color: $color-forest-wolf;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    line-height: 20px;
+    appearance: none;
+
+    &:focus-visible + .select__icon {
+      color: $color-deep-carmine;
+    }
+  }
+
+  &__icon {
+    pointer-events: none;
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    color: $color-pale-gray-brown;
+    transition: color $transition-300;
+  }
+}

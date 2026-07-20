@@ -1,0 +1,10 @@
+@use "@/app/styles/variables" as *;
+
+.link {
+  width: fit-content;
+  display: flex;
+  font-size: 18px;
+  line-height: 24px;
+  text-decoration: none;
+  color: $color-black;
+}

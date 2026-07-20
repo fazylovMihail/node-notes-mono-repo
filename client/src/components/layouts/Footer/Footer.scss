@@ -1,0 +1,11 @@
+@use "@/app/styles/variables" as *;
+
+.footer {
+  padding: 32px 0;
+  border-top: 2px solid $color-forest-wolf;
+
+  & > .container {
+    display: flex;
+    justify-content: flex-end;
+  }
+}

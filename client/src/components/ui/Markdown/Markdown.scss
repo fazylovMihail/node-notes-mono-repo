@@ -1,0 +1,73 @@
+@use "@/app/styles/variables" as *;
+
+.markdown {
+  padding: 32px;
+  border-radius: 16px;
+  background-color: $color-forest-wolf;
+
+  &__h1,
+  &__h2,
+  &__h3,
+  &__h4,
+  &__h5,
+  &__h6 {
+    display: block;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  &__h1:not(:first-child) {
+    margin-top: 24px;
+  }
+  &__h2:not(:first-child) {
+    margin-top: 20px;
+  }
+  &__h3:not(:first-child) {
+    margin-top: 16px;
+  }
+  &__h4:not(:first-child),
+  &__h5:not(:first-child),
+  &__h6:not(:first-child) {
+    margin-top: 14px;
+  }
+
+  &__h1 {
+    font-size: 32px;
+    line-height: 38px;
+  }
+
+  &__h2 {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  &__h3 {
+    font-size: 19px;
+    line-height: 25px;
+  }
+
+  &__h4 {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  &__h5 {
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  &__h6 {
+    font-size: 11px;
+    line-height: 15px;
+  }
+
+  &__p {
+    margin: 0;
+    font-size: 18px;
+    line-height: 24px;
+
+    &:not(:first-child) {
+      margin: 24px 0 0;
+    }
+  }
+}

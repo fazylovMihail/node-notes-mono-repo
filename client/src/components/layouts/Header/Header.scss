@@ -1,0 +1,33 @@
+@use "@/app/styles/variables" as *;
+
+.header {
+  padding: 32px 0 0;
+
+  &__content {
+    padding: 22px 75px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 100px;
+    background-color: $color-forest-wolf;
+    border-radius: 50px;
+  }
+
+  &__logo {
+    width: 84px;
+    height: 26px;
+    color: $color-pale-gray-brown;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    column-gap: 30px;
+  }
+
+  &__label {
+    font-size: 16px;
+    line-height: 20px;
+    color: $color-pale-gray-brown;
+  }
+}

@@ -1,0 +1,94 @@
+@use "@/app/styles/variables" as *;
+
+.custom-input {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  row-gap: 5px;
+
+  &__field {
+    width: 100%;
+    outline: none;
+    padding: 16px 20px;
+    background-color: $color-pale-gray-brown;
+    color: $color-forest-wolf;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    line-height: 20px;
+
+    &:focus-visible,
+    &:hover {
+      & + .custom-input__icon {
+        color: $color-deep-carmine;
+      }
+    }
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus {
+      -webkit-text-fill-color: $color-forest-wolf;
+      -webkit-box-shadow: 0 0 0px 1000px $color-habrahabrs inset;
+    }
+  }
+
+  &__label {
+    cursor: text;
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  &__label-star {
+    color: $color-deep-carmine;
+  }
+
+  &__icon {
+    pointer-events: none;
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    color: $color-pale-gray-brown;
+    transition: color $transition-300;
+  }
+
+  &__cancel {
+    z-index: 2;
+    position: absolute;
+    top: 16px;
+    right: 20px;
+  }
+
+  &--search {
+    .custom-input__field {
+      padding: 16px 20px 16px 50px;
+      background-color: $color-forest-wolf;
+      color: $color-black;
+      border-radius: 16px;
+
+      &::-webkit-search-cancel-button {
+        display: none;
+      }
+    }
+  }
+
+  &--edit {
+    .custom-input__field {
+      background-color: $color-forest-wolf;
+      color: $color-black;
+      font-size: 20px;
+      line-height: 26px;
+    }
+
+    .custom-input__label {
+      color: $color-forest-wolf;
+    }
+  }
+
+  &--create {
+    .custom-input__field {
+      font-size: 20px;
+      line-height: 26px;
+    }
+  }
+}
