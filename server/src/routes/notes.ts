@@ -12,6 +12,7 @@ import {
 import { Router } from "express";
 import { nanoid } from "nanoid";
 import sanitizeHtml from "sanitize-html";
+import path from "node:path";
 
 import { PDF_NOTE_CSS } from "../utils";
 
@@ -351,6 +352,12 @@ route.post("/download-pdf", async (req, res) => {
     // @ts-ignore
     const chromium = (await import("@sparticuz/chromium")).default;
 
+    const executablePath = await chromium.executablePath();
+    const execDir = path.dirname(executablePath);
+    process.env.LD_LIBRARY_PATH =
+      execDir +
+      (process.env.LD_LIBRARY_PATH ? ":" + process.env.LD_LIBRARY_PATH : "");
+
     const browser = await puppeteerCore.launch({
       args: [
         ...chromium.args,
@@ -359,7 +366,7 @@ route.post("/download-pdf", async (req, res) => {
         "--disable-gl-drawing-for-tests",
       ],
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
+      executablePath: executablePath,
       headless: chromium.headless,
     });
 
