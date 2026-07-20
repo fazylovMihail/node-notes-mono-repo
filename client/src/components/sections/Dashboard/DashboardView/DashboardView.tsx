@@ -5,11 +5,10 @@ import { getArchivePath } from "@client/utils";
 import { DashboardContext } from "@client/utils";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteHtmlContent } from "@client/api/Note";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 
 export function DashboardView() {
   const navigate = useNavigate();
-  const contentRef = useRef<HTMLDivElement>(null);
   const { note, isArchive } = useOutletContext<DashboardContext>();
 
   const { data: htmlNote, status } = useQuery({
@@ -41,13 +40,8 @@ export function DashboardView() {
             onOpenEditForm={handleOpenEditForm}
             isEdit={false}
             isArchive={isArchive}
-            contentRef={contentRef}
           />
-          {htmlNote && (
-            <div ref={contentRef} className="print-section">
-              <Markdown note={htmlNote} />
-            </div>
-          )}
+          {htmlNote && <Markdown note={htmlNote} />}
         </>
       );
   }

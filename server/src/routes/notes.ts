@@ -12,6 +12,7 @@ import {
 import { Router } from "express";
 import { nanoid } from "nanoid";
 import sanitizeHtml from "sanitize-html";
+import PDFDocument from "pdfkit";
 
 const markdownToHtml = (content: Note["content"]): string => {
   if (!content) return "";
@@ -333,6 +334,35 @@ route.post("/content", async (req, res) => {
     const sanitizedHtml = sanitizeHtml(htmlContent, MARKDOWN_CLEAN_OPTIONS);
 
     res.status(200).send(sanitizedHtml);
+  } catch (err) {
+    handleError(err, res);
+  }
+});
+
+route.post("/download-pdf", async (req, res) => {
+  try {
+    const { title, content } = req.body;
+
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 50,
+    });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${encodeURIComponent(title || "document")}.pdf"`,
+    );
+
+    doc.pipe(res);
+
+    doc.fontSize(26).text(title || "Заметка", { align: "center" });
+    doc.moveDown(1.5);
+
+    const cleanText = (content || "").replace(/[#*`_\-]/g, "");
+    doc.fontSize(14).text(cleanText, { lineGap: 6 });
+
+    doc.end();
   } catch (err) {
     handleError(err, res);
   }
