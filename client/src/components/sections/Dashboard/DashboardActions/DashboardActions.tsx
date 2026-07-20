@@ -2,37 +2,37 @@ import {
   fetchDeleteArchiveNote,
   fetchDeleteNote,
   fetchMoveNoteToArchive,
-  fetchNoteDownloadPdf,
   fetchRestoreArchiveNote,
 } from "@client/api/Note";
 import { Button } from "@client/components/ui";
 import { useNoteMutation } from "@client/hooks";
 import { Note } from "@shared/models/Note";
-import { useMutation } from "@tanstack/react-query";
-import { memo, useCallback, type FC } from "react";
+import { memo, useCallback, type FC, type RefObject } from "react";
+import { useReactToPrint } from "react-to-print";
 
 interface DashboardActionsProps {
   selectedNote: Note;
   isEdit: boolean;
   isArchive: boolean;
+  contentRef?: RefObject<HTMLDivElement | null>;
   onOpenEditForm?: () => void;
   onCloseEditForm?: () => void;
 }
 
 export const DashboardActions: FC<DashboardActionsProps> = memo(
-  ({ selectedNote, isEdit, isArchive, onOpenEditForm }) => {
+  ({ selectedNote, isEdit, isArchive, contentRef, onOpenEditForm }) => {
     const { note_id } = selectedNote;
     const navigatePath = isArchive ? "/dashboard/archive" : "/dashboard";
 
     const { mutate, isAnyPending, isArchivePending, isDeletePending } =
       useNoteMutation(navigatePath);
 
-    const { mutate: downloadMutate, isPending: isDownloadPending } =
-      useMutation({
-        mutationFn: () => fetchNoteDownloadPdf(selectedNote),
-      });
+    const handlePrint = useReactToPrint({
+      contentRef: contentRef || undefined,
+      documentTitle: selectedNote.title || "document",
+    });
 
-    const isDisabled = isAnyPending || isDownloadPending;
+    const isDisabled = isAnyPending;
 
     const handleArchiveToggle = useCallback(() => {
       mutate({
@@ -47,8 +47,6 @@ export const DashboardActions: FC<DashboardActionsProps> = memo(
         id: note_id,
       });
     }, [mutate, isArchive, note_id]);
-
-    const handleDownload = () => downloadMutate();
 
     return (
       <div className="dashboard__actions">
@@ -106,9 +104,9 @@ export const DashboardActions: FC<DashboardActionsProps> = memo(
           width={16}
           height={16}
           disabled={isDisabled}
-          onClick={handleDownload}
+          onClick={() => handlePrint()}
         >
-          {isDownloadPending ? "Скачивание..." : "pdf"}
+          pdf
         </Button>
 
         <Button
