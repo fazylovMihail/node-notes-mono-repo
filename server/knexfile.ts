@@ -8,49 +8,36 @@ if (process.env.NODE_ENV !== "production") {
 
 const currentEnv = process.env.NODE_ENV || "development";
 
+const commonConnection = {
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT) || 5432,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  ssl:
+    process.env.DB_SSL === "true" || process.env.DB_URL
+      ? { rejectUnauthorized: false }
+      : false,
+};
+
 const environments: { [key: string]: Knex.Config } = {
   development: {
     client: "pg",
     connection: {
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT) || 5432,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ...commonConnection,
+      ssl: { rejectUnauthorized: false },
     },
-    migrations: {
-      directory: path.resolve(process.cwd(), "server/src/db/migrations"),
-    },
-    seeds: {
-      directory: path.resolve(process.cwd(), "server/src/db/seeds"),
-    },
+    migrations: { directory: "./src/db/migrations" },
+    seeds: { directory: "./src/db/seeds" },
   },
   production: {
     client: "pg",
-    connection: {
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT) || 5432,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      ssl:
-        process.env.DB_SSL === "true" || process.env.DB_URL
-          ? { rejectUnauthorized: false }
-          : false,
-    },
+    connection: commonConnection,
     pool: {
       min: 0,
       max: 2,
     },
-    migrations: {
-      directory: path.resolve(process.cwd(), "server/src/db/migrations"),
-    },
-    seeds: {
-      directory: path.resolve(process.cwd(), "server/src/db/seeds"),
-    },
+    migrations: { directory: "./dist/server/db/migrations" },
   },
 };
 
