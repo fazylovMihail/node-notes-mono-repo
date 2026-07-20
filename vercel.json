@@ -8,8 +8,7 @@
         "maxDuration": 15,
         "includeFiles": [
           "shared/models/**",
-          "server/src/db/**",
-          "node_modules/@sparticuz/chromium/bin/**"
+          "server/src/db/**"
         ]
       }
     },

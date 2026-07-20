@@ -350,13 +350,7 @@ route.post("/download-pdf", async (req, res) => {
 
     const puppeteerCore = await import("puppeteer-core");
     // @ts-ignore
-    const chromium = (await import("@sparticuz/chromium")).default;
-
-    const executablePath = await chromium.executablePath();
-    const execDir = path.dirname(executablePath);
-    process.env.LD_LIBRARY_PATH =
-      execDir +
-      (process.env.LD_LIBRARY_PATH ? ":" + process.env.LD_LIBRARY_PATH : "");
+    const chromium = (await import("@sparticuz/chromium-min")).default;
 
     const browser = await puppeteerCore.launch({
       args: [
@@ -366,7 +360,7 @@ route.post("/download-pdf", async (req, res) => {
         "--disable-gl-drawing-for-tests",
       ],
       defaultViewport: chromium.defaultViewport,
-      executablePath: executablePath,
+      executablePath: await chromium.executablePath("https://github.com"),
       headless: chromium.headless,
     });
 
