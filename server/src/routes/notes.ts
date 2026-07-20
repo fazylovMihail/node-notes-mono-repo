@@ -326,103 +326,64 @@ route.patch("/:id/archive", async (req, res) => {
   }
 });
 
-route.delete("/", async (req, res) => {
-  try {
-    const userId = req.user?.id;
-
-    const deletedCount: number = await db("notes")
-      .where("user_id", userId)
-      .delete();
-
-    if (deletedCount === 0) {
-      return res.status(404).json({
-        error:
-          "У данного пользователя нет заметок, которые можно было удалить.",
-      });
-    }
-
-    res.sendStatus(204);
-  } catch (err) {
-    handleError(err, res);
-  }
-});
-
-route.delete("/archive", async (req, res) => {
-  try {
-    const userId = req.user?.id;
-
-    const deletedCount: number = await db("archive_notes")
-      .where("user_id", userId)
-      .delete();
-
-    if (deletedCount === 0) {
-      return res.status(404).json({
-        error:
-          "У данного пользователя нет архивных заметок, которые можно было удалить.",
-      });
-    }
-
-    res.sendStatus(204);
-  } catch (err) {
-    handleError(err, res);
-  }
-});
-
-route.delete("/:id", async (req, res) => {
+route.get("/:id/pdf", async (req, res) => {
   try {
     const userId = req.user?.id;
     const noteId = req.params.id;
 
-    const deletedCount: number = await db("notes")
-      .where({
-        user_id: userId,
-        note_id: noteId,
-      })
-      .delete();
+    const note: Note = await db("notes")
+      .where({ user_id: userId, note_id: noteId })
+      .first();
 
-    if (deletedCount === 0) {
-      return res.status(404).json({ error: "Заметка не найдена." });
+    if (!note) {
+      return res.status(404).json({ error: "Заметка не найдена" });
     }
-
-    res.sendStatus(204);
-  } catch (err) {
-    handleError(err, res);
-  }
-});
-
-route.delete("/:id/archive", async (req, res) => {
-  try {
-    const userId = req.user?.id;
-    const noteId = req.params.id;
-
-    const deletedCount: number = await db("archive_notes")
-      .where({
-        user_id: userId,
-        note_id: noteId,
-      })
-      .delete();
-
-    if (deletedCount === 0) {
-      return res
-        .status(404)
-        .json({ error: "Архивированная заметка не найдена." });
-    }
-
-    res.sendStatus(204);
-  } catch (err) {
-    handleError(err, res);
-  }
-});
-
-route.post("/content", async (req, res) => {
-  try {
-    const note = NoteSchema.parse(req.body);
 
     const htmlContent = markdownToHtml(note.content);
-    const cleanContent = sanitizeHtml(htmlContent, MARKDOWN_CLEAN_OPTIONS);
+    const sanitizedHtml = sanitizeHtml(htmlContent, MARKDOWN_CLEAN_OPTIONS);
 
-    res.setHeader("Content-Type", "text/html");
-    res.status(200).send(cleanContent);
+    const fullHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>${PDF_NOTE_CSS}</style>
+      </head>
+      <body>
+        <h1 class="pdf-title">${note.title}</h1>
+        <div class="pdf-content">${sanitizedHtml}</div>
+      </body>
+      </html>
+    `;
+
+    const puppeteerCore = await import("puppeteer-core");
+    // @ts-ignore
+    const chromium = (await import("@sparticuz/chromium")).default;
+
+    const browser = await puppeteerCore.launch({
+      args: [
+        ...chromium.args,
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-gl-drawing-for-tests",
+      ],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(fullHtml, { waitUntil: "domcontentloaded" });
+
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
+    });
+
+    await browser.close();
+
+    res.contentType("application/pdf");
+    res.send(pdfBuffer);
   } catch (err) {
     handleError(err, res);
   }
@@ -440,7 +401,12 @@ route.post("/download-pdf", async (req, res) => {
     const chromium = (await import("@sparticuz/chromium")).default;
 
     const browser = await puppeteerCore.launch({
-      args: chromium.args,
+      args: [
+        ...chromium.args,
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-gl-drawing-for-tests",
+      ],
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
       headless: chromium.headless,
@@ -472,6 +438,25 @@ route.post("/download-pdf", async (req, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", 'attachment; filename="document.pdf"');
     res.end(pdfBuffer);
+  } catch (err) {
+    handleError(err, res);
+  }
+});
+
+route.delete("/:id", async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const noteId = req.params.id;
+
+    const deletedCount = await db("notes")
+      .where({ user_id: userId, note_id: noteId })
+      .del();
+
+    if (deletedCount === 0) {
+      return res.status(404).json({ error: "Заметка не найдена" });
+    }
+
+    res.sendStatus(204);
   } catch (err) {
     handleError(err, res);
   }
