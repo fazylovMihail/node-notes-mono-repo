@@ -12,7 +12,6 @@ import {
 import { Router } from "express";
 import { nanoid } from "nanoid";
 import sanitizeHtml from "sanitize-html";
-import puppeteer from "puppeteer";
 
 import { PDF_NOTE_CSS } from "../utils";
 
@@ -436,7 +435,17 @@ route.post("/download-pdf", async (req, res) => {
 
     const htmlContent = markdownToHtml(markdownContent);
 
-    const browser = await puppeteer.launch({ headless: true });
+    const puppeteerCore = await import("puppeteer-core");
+    // @ts-ignore
+    const chromium = (await import("@sparticuz/chromium")).default;
+
+    const browser = await puppeteerCore.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
+
     const page = await browser.newPage();
 
     const fullHtml = `
