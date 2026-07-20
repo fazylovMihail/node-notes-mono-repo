@@ -342,8 +342,8 @@ route.post("/content", async (req, res) => {
 
 route.post("/download-pdf", async (req, res) => {
   try {
-    const note = NoteSchema.parse(req.body);
-    const markdownContent = note.content || "";
+    const { title, content } = req.body;
+    const markdownContent = content || "";
 
     const htmlContent = markdownToHtml(markdownContent);
 
@@ -375,6 +375,7 @@ route.post("/download-pdf", async (req, res) => {
           </style>
         </head>
         <body>
+          <h1 class="pdf-title">${title || "document"}</h1>
           ${htmlContent}
         </body>
       </html>
@@ -387,7 +388,10 @@ route.post("/download-pdf", async (req, res) => {
     await browser.close();
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", 'attachment; filename="document.pdf"');
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${encodeURIComponent(title || "document")}.pdf"`,
+    );
     res.end(pdfBuffer);
   } catch (err) {
     handleError(err, res);
