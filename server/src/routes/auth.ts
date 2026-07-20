@@ -16,7 +16,7 @@ import {
 import { nanoid } from "nanoid";
 import moment from "moment";
 import { demoNote } from "../utils/demoNote";
-import { RawNote } from "../../../shared/models/Note";
+import { Note, RawNote } from "../../../shared/models/Note";
 
 const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
@@ -67,11 +67,15 @@ route.post("/register", guestMiddleware, async (req, res) => {
       ...demoNote,
     };
 
-    await db("notes").insert(rawNote);
+    const returningNote: Note = await db("notes")
+      .insert(rawNote)
+      .returning("*")
+      .then((results) => results[0]);
 
     res.status(200).cookie("session_id", sessionId, COOKIE_OPTIONS).json({
       session: sessionId,
       user: returningUser,
+      defaultNote: returningNote,
     });
   } catch (err) {
     handleError(err, res);

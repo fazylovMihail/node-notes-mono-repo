@@ -1,5 +1,6 @@
-import z from "zod";
+import z, { boolean } from "zod";
 import { SessionSchema } from "./Session";
+import { NoteSchema } from "./Note";
 
 const UserSchema = z.object({
   id: z.string().length(21),
@@ -39,6 +40,7 @@ type RequestUser = z.infer<typeof RequestUserSchema>;
 const PostAuthUserSchema = z.object({
   session: SessionSchema.shape.session_id,
   user: ReturningUserSchema,
+  defaultNote: NoteSchema.optional(),
 });
 
 type PostAuthUser = z.infer<typeof PostAuthUserSchema>;

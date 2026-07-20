@@ -34,7 +34,7 @@ export const RegisterForm: FC<FormHTMLAttributes<HTMLFormElement>> = (
     onSuccess: (data: PostAuthUser) => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       dispatch(setProfile(data.user.username));
-      navigate("/dashboard", { replace: true });
+      navigate(`/dashboard/${data.defaultNote?.note_id}`, { replace: true });
     },
   });
 
