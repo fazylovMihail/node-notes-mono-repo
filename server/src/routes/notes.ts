@@ -395,6 +395,22 @@ route.post("/download-pdf", async (req, res) => {
   }
 });
 
+route.delete("/", async (req, res) => {
+  try {
+    const userId = req.user?.id;
+
+    const deletedCount = await db("notes").where({ user_id: userId }).delete();
+
+    if (deletedCount === 0) {
+      return res.status(404).json({ error: "Заметки не найдены" });
+    }
+
+    res.sendStatus(204);
+  } catch (err) {
+    handleError(err, res);
+  }
+});
+
 route.delete("/:id", async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -402,10 +418,32 @@ route.delete("/:id", async (req, res) => {
 
     const deletedCount = await db("notes")
       .where({ user_id: userId, note_id: noteId })
-      .del();
+      .delete();
 
     if (deletedCount === 0) {
       return res.status(404).json({ error: "Заметка не найдена" });
+    }
+
+    res.sendStatus(204);
+  } catch (err) {
+    handleError(err, res);
+  }
+});
+
+route.delete("/:id/archive", async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const noteId = req.params.id;
+
+    const deletedCount = await db("archive_notes")
+      .where({
+        user_id: userId,
+        note_id: noteId,
+      })
+      .delete();
+
+    if (deletedCount === 0) {
+      return res.status(404).json({ error: "Архивная заметка не найдена" });
     }
 
     res.sendStatus(204);
