@@ -2,7 +2,9 @@ import path from "path";
 import dotenv from "dotenv";
 import type { Knex } from "knex";
 
-dotenv.config({ path: path.resolve(__dirname, ".env") });
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: path.resolve(process.cwd(), "server/.env") });
+}
 
 const currentEnv = process.env.NODE_ENV || "development";
 
@@ -20,10 +22,10 @@ const environments: { [key: string]: Knex.Config } = {
       },
     },
     migrations: {
-      directory: "./src/db/migrations",
+      directory: path.resolve(process.cwd(), "server/src/db/migrations"),
     },
     seeds: {
-      directory: "./src/db/seeds",
+      directory: path.resolve(process.cwd(), "server/src/db/seeds"),
     },
   },
   production: {
@@ -35,17 +37,19 @@ const environments: { [key: string]: Knex.Config } = {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       ssl:
-        process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
+        process.env.DB_SSL === "true" || process.env.DB_URL
+          ? { rejectUnauthorized: false }
+          : false,
     },
     pool: {
       min: 0,
       max: 2,
     },
     migrations: {
-      directory: "./src/db/migrations",
+      directory: path.resolve(process.cwd(), "server/src/db/migrations"),
     },
     seeds: {
-      directory: "./src/db/seeds",
+      directory: path.resolve(process.cwd(), "server/src/db/seeds"),
     },
   },
 };
