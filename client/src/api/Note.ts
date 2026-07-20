@@ -257,33 +257,41 @@ async function fetchNoteHtmlContent(data: Note): Promise<string> {
 
 async function fetchNoteDownloadPdf(data: Note): Promise<void> {
   try {
-    const markdownContent = data.content || "";
-    const htmlContent = data.html_content || markdownContent;
+    const response = await fetch("/api/notes/content", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-    const element = document.createElement("div");
-    element.innerHTML = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            ${PDF_NOTE_CSS}
-          </style>
-        </head>
-        <body>
-          <h1 class="pdf-title">${data.title || "document"}</h1>
-          <div class="pdf-content">
-            ${htmlContent}
-          </div>
-        </body>
-      </html>
+    if (!response.ok) {
+      throw new Error("Ошибка получения HTML контента с бэкенда.");
+    }
+
+    const backendHtmlContent = await response.text();
+
+    const container = document.createElement("div");
+    container.style.position = "absolute";
+    container.style.left = "-9999px";
+    container.style.top = "-9999px";
+    container.style.width = "800px";
+
+    container.innerHTML = `
+      <h1 class="pdf-title">${data.title || "document"}</h1>
+      <style>${PDF_NOTE_CSS}</style>
+      <div class="pdf-content">
+        ${backendHtmlContent}
+      </div>
     `;
 
+    document.body.appendChild(container);
+
     const options = {
-      margin: 10,
+      margin: 15,
       filename: `${data.title || "document"}.pdf`,
       image: { type: "jpeg" as const, quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
       jsPDF: {
         unit: "mm" as const,
         format: "a4" as const,
@@ -291,9 +299,11 @@ async function fetchNoteDownloadPdf(data: Note): Promise<void> {
       },
     };
 
-    await html2pdf().set(options).from(element).save();
+    await html2pdf().set(options).from(container).save();
+
+    document.body.removeChild(container);
   } catch (err) {
-    console.error("Ошибка генерации PDF на клиенте:", err);
+    console.error("Ошибка скачивания PDF:", err);
     throw err;
   }
 }
