@@ -32,7 +32,6 @@
     "webpack-cli": "^7.0.3",
     "webpack-node-externals": "^3.0.0"
   },
-  "type": "module",
   "dependencies": {
     "@types/webpack-node-externals": "^3.0.4",
     "moment": "^2.30.1",
