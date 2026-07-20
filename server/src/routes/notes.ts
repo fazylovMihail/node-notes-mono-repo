@@ -357,10 +357,37 @@ route.post("/download-pdf", async (req, res) => {
     doc.pipe(res);
 
     doc.fontSize(26).text(title || "Заметка", { align: "center" });
-    doc.moveDown(1.5);
+    doc.moveDown(2);
 
-    const cleanText = (content || "").replace(/[#*`_\-]/g, "");
-    doc.fontSize(14).text(cleanText, { lineGap: 6 });
+    const rawLines = (content || "").split("\n");
+
+    rawLines.forEach((line: string) => {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        doc.moveDown(0.5);
+        return;
+      }
+
+      const headingMatch = trimmed.match(/^(#{1,6})\s+(.*)$/);
+
+      if (headingMatch) {
+        const level = headingMatch[1].length;
+        const text = headingMatch[2];
+
+        let fontSize = 20;
+        if (level === 1) fontSize = 22;
+        if (level === 2) fontSize = 18;
+        if (level === 3) fontSize = 16;
+        if (level > 3) fontSize = 14;
+
+        doc.moveDown(0.5);
+        doc.fontSize(fontSize).text(text, { lineGap: 4 });
+        doc.moveDown(0.3);
+      } else {
+        const cleanText = trimmed.replace(/[*_`\-]/g, "");
+        doc.fontSize(12).text(cleanText, { lineGap: 6 });
+      }
+    });
 
     doc.end();
   } catch (err) {
