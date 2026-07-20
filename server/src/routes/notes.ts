@@ -12,7 +12,8 @@ import {
 import { Router } from "express";
 import { nanoid } from "nanoid";
 import sanitizeHtml from "sanitize-html";
-import path from "node:path";
+// @ts-ignore
+import htmlPdf from "html-pdf-node";
 
 import { PDF_NOTE_CSS } from "../utils";
 
@@ -345,26 +346,7 @@ route.post("/download-pdf", async (req, res) => {
   try {
     const { title, content } = req.body;
     const markdownContent = content || "";
-
     const htmlContent = markdownToHtml(markdownContent);
-
-    const puppeteerCore = await import("puppeteer-core");
-    // @ts-ignore
-    const chromium = (await import("@sparticuz/chromium-min")).default;
-
-    const browser = await puppeteerCore.launch({
-      args: [
-        ...chromium.args,
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-gl-drawing-for-tests",
-      ],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath("https://github.com"),
-      headless: chromium.headless,
-    });
-
-    const page = await browser.newPage();
 
     const fullHtml = `
       <!DOCTYPE html>
@@ -377,23 +359,24 @@ route.post("/download-pdf", async (req, res) => {
         </head>
         <body>
           <h1 class="pdf-title">${title || "document"}</h1>
-          ${htmlContent}
+          <div class="pdf-content">
+            ${htmlContent}
+          </div>
         </body>
       </html>
     `;
 
-    await page.setContent(fullHtml, { waitUntil: "domcontentloaded" });
+    const options = { format: "A4", printBackground: true };
+    const file = { content: fullHtml };
 
-    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
-
-    await browser.close();
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${encodeURIComponent(title || "document")}.pdf"`,
-    );
-    res.end(pdfBuffer);
+    htmlPdf.generatePdf(file, options).then((pdfBuffer: Buffer) => {
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${encodeURIComponent(title || "document")}.pdf"`,
+      );
+      res.end(pdfBuffer);
+    });
   } catch (err) {
     handleError(err, res);
   }
