@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "db:migrate": "knex migrate:latest --knexfile knexfile.ts",
