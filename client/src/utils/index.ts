@@ -6,3 +6,4 @@ export type {
   PaginatedResponse,
 } from "./shared.types";
 export { socials } from "./constants";
+export { PDF_NOTE_CSS } from "./pdfStyles";

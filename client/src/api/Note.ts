@@ -1,5 +1,9 @@
 import { PaginatedResponse } from "@client/utils";
 import { CreateNote, Note, NoteId, UpdateNote } from "@shared/models/Note";
+// @ts-ignore
+import html2pdf from "html2pdf.js";
+
+import { PDF_NOTE_CSS } from "../utils";
 
 type SearchParams = {
   sort?: "month" | "three-month" | "all-time";
@@ -253,32 +257,43 @@ async function fetchNoteHtmlContent(data: Note): Promise<string> {
 
 async function fetchNoteDownloadPdf(data: Note): Promise<void> {
   try {
-    const response = await fetch("/api/notes/download-pdf", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const markdownContent = data.content || "";
+    const htmlContent = data.html_content || markdownContent;
+
+    const element = document.createElement("div");
+    element.innerHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            ${PDF_NOTE_CSS}
+          </style>
+        </head>
+        <body>
+          <h1 class="pdf-title">${data.title || "document"}</h1>
+          <div class="pdf-content">
+            ${htmlContent}
+          </div>
+        </body>
+      </html>
+    `;
+
+    const options = {
+      margin: 10,
+      filename: `${data.title || "document"}.pdf`,
+      image: { type: "jpeg" as const, quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: {
+        unit: "mm" as const,
+        format: "a4" as const,
+        orientation: "portrait" as const,
       },
-      body: JSON.stringify(data),
-    });
+    };
 
-    if (!response.ok) {
-      throw new Error("Ошибка создания PDF файла заметки.");
-    }
-
-    const blob = await response.blob();
-
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-
-    link.download = `${data.title || "document"}.pdf`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    await html2pdf().set(options).from(element).save();
   } catch (err) {
-    console.error(err);
+    console.error("Ошибка генерации PDF на клиенте:", err);
     throw err;
   }
 }

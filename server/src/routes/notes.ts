@@ -12,10 +12,6 @@ import {
 import { Router } from "express";
 import { nanoid } from "nanoid";
 import sanitizeHtml from "sanitize-html";
-// @ts-ignore
-import htmlPdf from "html-pdf-node";
-
-import { PDF_NOTE_CSS } from "../utils";
 
 const markdownToHtml = (content: Note["content"]): string => {
   if (!content) return "";
@@ -337,46 +333,6 @@ route.post("/content", async (req, res) => {
     const sanitizedHtml = sanitizeHtml(htmlContent, MARKDOWN_CLEAN_OPTIONS);
 
     res.status(200).send(sanitizedHtml);
-  } catch (err) {
-    handleError(err, res);
-  }
-});
-
-route.post("/download-pdf", async (req, res) => {
-  try {
-    const { title, content } = req.body;
-    const markdownContent = content || "";
-    const htmlContent = markdownToHtml(markdownContent);
-
-    const fullHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            ${PDF_NOTE_CSS}
-          </style>
-        </head>
-        <body>
-          <h1 class="pdf-title">${title || "document"}</h1>
-          <div class="pdf-content">
-            ${htmlContent}
-          </div>
-        </body>
-      </html>
-    `;
-
-    const options = { format: "A4", printBackground: true };
-    const file = { content: fullHtml };
-
-    htmlPdf.generatePdf(file, options).then((pdfBuffer: Buffer) => {
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${encodeURIComponent(title || "document")}.pdf"`,
-      );
-      res.end(pdfBuffer);
-    });
   } catch (err) {
     handleError(err, res);
   }

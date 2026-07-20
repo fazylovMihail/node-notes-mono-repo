@@ -16,5 +16,10 @@
       "@shared/*": ["../shared/*"]
     }
   },
-  "include": ["src/**/*", "knexfile.ts", "../shared/**/*"]
+  "include": [
+    "src/**/*",
+    "knexfile.ts",
+    "../shared/**/*",
+    "../client/src/utils/pdfStyles.ts"
+  ]
 }
