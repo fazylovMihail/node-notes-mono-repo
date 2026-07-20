@@ -189,7 +189,7 @@ route.post("/", async (req, res) => {
 
     const rawNote = RawNoteSchema.parse({
       note_id: nanoid(),
-      user_id: userId,
+      user_id: userId || "",
       title,
       content: content ?? "",
     });
