@@ -2,7 +2,8 @@ import db from "../db";
 import { authMiddleware, guestMiddleware } from "../middlewares";
 import { handleError } from "../utils";
 import {
-  AuthUserSchema,
+  RegisterUserSchema,
+  LoginUserSchema,
   RawUserSchema,
   ReturningUser,
   User,
@@ -45,7 +46,7 @@ const route = Router();
 
 route.post("/register", guestMiddleware, async (req, res) => {
   try {
-    const { username, password } = AuthUserSchema.parse(req.body);
+    const { username, password } = RegisterUserSchema.parse(req.body);
     const hashedPassword = await hash(password, 10);
 
     const rawUser = RawUserSchema.parse({
@@ -84,7 +85,7 @@ route.post("/register", guestMiddleware, async (req, res) => {
 
 route.post("/login", guestMiddleware, async (req, res) => {
   try {
-    const { username, password } = AuthUserSchema.parse(req.body);
+    const { username, password } = LoginUserSchema.parse(req.body);
 
     const user: User = await db
       .select()
@@ -94,13 +95,13 @@ route.post("/login", guestMiddleware, async (req, res) => {
       .first();
 
     if (!user) {
-      return res.status(401).json({ error: "Неверный логин или пароль." });
+      return res.status(401).json({ message: "Неверный логин или пароль." });
     }
 
     const isPasswordCorrect = await compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      return res.status(401).json({ error: "Неверный логин или пароль." });
+      return res.status(401).json({ message: "Неверный логин или пароль." });
     }
 
     const sessionId = await createSession(user);
@@ -131,7 +132,7 @@ route.post("/logout", authMiddleware, async (req, res) => {
       .delete();
 
     if (deletedCount === 0) {
-      return res.status(404).json({ error: "Сессия не найдена." });
+      return res.status(404).json({ message: "Сессия не найдена." });
     }
 
     res.sendStatus(204);

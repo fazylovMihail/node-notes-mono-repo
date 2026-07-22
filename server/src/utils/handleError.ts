@@ -6,7 +6,7 @@ export default function handleError(err: unknown, res: Response) {
 
   if (err instanceof ZodError) {
     return res.status(400).json({
-      error: "Ошибка валидации.",
+      message: "Ошибка валидации данных.",
       details: err.issues,
     });
   }
@@ -23,5 +23,7 @@ export default function handleError(err: unknown, res: Response) {
     }
   }
 
-  res.status(500).json({ error: "Внутренняя ошибка сервера." });
+  res.status(500).json({
+    message: "Внутренняя ошибка сервера.",
+  });
 }

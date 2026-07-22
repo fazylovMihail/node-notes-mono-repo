@@ -1,5 +1,7 @@
+import { ErrorSchema } from "@shared/models/Error";
 import {
-  AuthUser,
+  LoginUser,
+  RegisterUser,
   PostAuthUser,
   PostAuthUserSchema,
   UserName,
@@ -22,7 +24,7 @@ async function fetchUser(): Promise<UserName> {
 async function fetchUserLogin({
   username,
   password,
-}: AuthUser): Promise<PostAuthUser> {
+}: LoginUser): Promise<PostAuthUser> {
   try {
     const response = await fetch("/api/auth/login", {
       method: "POST",
@@ -31,7 +33,16 @@ async function fetchUserLogin({
     });
 
     if (!response.ok) {
-      throw new Error("Ошибка авторизации.");
+      let rawError;
+
+      try {
+        rawError = await response.json();
+      } catch {
+        throw new Error(`Сетевая ошибка со статусом: ${response.status}`);
+      }
+
+      const errorText = ErrorSchema.parse(rawError);
+      throw errorText;
     }
 
     const data: unknown = await response.json();
@@ -46,7 +57,7 @@ async function fetchUserLogin({
 async function fetchUserRegister({
   username,
   password,
-}: AuthUser): Promise<PostAuthUser> {
+}: RegisterUser): Promise<PostAuthUser> {
   try {
     const response = await fetch("/api/auth/register", {
       method: "POST",

@@ -9,6 +9,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   modificators?: string[];
   iconId?: string;
   labelText?: string;
+  errorText?: string;
   isRequire?: boolean;
   isSearch?: boolean;
   onReset?: () => void;
@@ -21,6 +22,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       modificators,
       id,
       labelText,
+      errorText,
       isRequire = false,
       isSearch = false,
       onReset,
@@ -76,6 +78,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {labelText}
             {isRequire && <span className="custom-input__label-star">*</span>}
           </label>
+        )}
+        {errorText && (
+          <span className="custom-input__error-label">{errorText}</span>
         )}
       </div>
     );

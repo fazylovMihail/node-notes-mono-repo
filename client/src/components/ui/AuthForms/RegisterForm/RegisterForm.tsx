@@ -5,9 +5,8 @@ import { Button } from "../../Button";
 import { useAppDispatch } from "@client/app/store";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
-  AuthUserSchema,
-  AuthUser,
-  UserName,
+  RegisterUserSchema,
+  RegisterUser,
   PostAuthUser,
 } from "@shared/models/User";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +15,7 @@ import { fetchUserRegister } from "@client/api/User";
 import { queryClient } from "@client/api/queryClient";
 import { useNavigate } from "react-router-dom";
 import { setProfile } from "@client/app/features/profileSlice";
+import { TError } from "@shared/models/Error";
 
 import "../AuthForm.scss";
 
@@ -25,8 +25,13 @@ export const RegisterForm: FC<FormHTMLAttributes<HTMLFormElement>> = (
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { register, handleSubmit } = useForm<AuthUser>({
-    resolver: zodResolver(AuthUserSchema),
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<RegisterUser>({
+    resolver: zodResolver(RegisterUserSchema),
   });
 
   const registerMutate = useMutation({
@@ -36,9 +41,15 @@ export const RegisterForm: FC<FormHTMLAttributes<HTMLFormElement>> = (
       dispatch(setProfile(data.user.username));
       navigate(`/dashboard/${data.defaultNote?.note_id}`, { replace: true });
     },
+    onError: (error: TError) => {
+      setError("username", {
+        type: "server",
+        message: error.message,
+      });
+    },
   });
 
-  const onSubmit: SubmitHandler<AuthUser> = (data) => {
+  const onSubmit: SubmitHandler<RegisterUser> = (data) => {
     registerMutate.mutate(data);
   };
 
@@ -53,6 +64,7 @@ export const RegisterForm: FC<FormHTMLAttributes<HTMLFormElement>> = (
           autoComplete="off"
           {...register("username")}
           isRequire
+          errorText={errors.username?.message}
         />
         <Input
           type="password"
@@ -61,6 +73,7 @@ export const RegisterForm: FC<FormHTMLAttributes<HTMLFormElement>> = (
           autoComplete="new-password"
           {...register("password")}
           isRequire
+          errorText={errors.password?.message}
         />
         <Button type="submit" disabled={registerMutate.isPending}>
           {registerMutate.isPending ? "Регистрация..." : "Регистрация"}

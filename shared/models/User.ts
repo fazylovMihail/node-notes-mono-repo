@@ -1,13 +1,10 @@
-import z, { boolean } from "zod";
+import z from "zod";
 import { SessionSchema } from "./Session";
 import { NoteSchema } from "./Note";
 
 const UserSchema = z.object({
   id: z.string().length(21),
-  username: z
-    .string()
-    .min(1, "Имя обязательно.")
-    .max(255, "Максимум 255 символов."),
+  username: z.string(),
   password: z.string().length(60),
   created_at: z.coerce.date(),
 });
@@ -16,14 +13,24 @@ type User = z.infer<typeof UserSchema>;
 
 type UserName = User["username"];
 
-const AuthUserSchema = UserSchema.pick({ username: true }).extend({
+const LoginUserSchema = UserSchema.pick({ username: true }).extend({
+  password: z.string(),
+});
+
+type LoginUser = z.infer<typeof LoginUserSchema>;
+
+const RegisterUserSchema = z.object({
+  username: z
+    .string()
+    .min(1, "Имя обязательно.")
+    .max(255, "Максимум 255 символов."),
   password: z
     .string()
     .min(8, "Минимум 8 символов.")
     .max(255, "Максимум 255 символов."),
 });
 
-type AuthUser = z.infer<typeof AuthUserSchema>;
+type RegisterUser = z.infer<typeof RegisterUserSchema>;
 
 const RawUserSchema = UserSchema.omit({ created_at: true });
 
@@ -49,8 +56,10 @@ export {
   UserSchema,
   User,
   UserName,
-  AuthUserSchema,
-  AuthUser,
+  LoginUserSchema,
+  LoginUser,
+  RegisterUserSchema,
+  RegisterUser,
   RawUserSchema,
   RawUser,
   ReturningUserSchema,
