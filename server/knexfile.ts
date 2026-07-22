@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import type { Knex } from "knex";
 
 if (process.env.NODE_ENV !== "production") {
-  dotenv.config({ path: path.resolve(process.cwd(), "server/.env") });
+  dotenv.config({ path: path.resolve(__dirname, ".env") });
 }
 
 const currentEnv = process.env.NODE_ENV || "development";
@@ -23,10 +23,7 @@ const commonConnection = {
 const environments: { [key: string]: Knex.Config } = {
   development: {
     client: "pg",
-    connection: {
-      ...commonConnection,
-      ssl: { rejectUnauthorized: false },
-    },
+    connection: commonConnection,
     migrations: { directory: "./src/db/migrations" },
     seeds: { directory: "./src/db/seeds" },
   },

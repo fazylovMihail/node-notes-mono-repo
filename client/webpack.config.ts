@@ -3,6 +3,7 @@ import { Configuration } from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 
 interface WebpackEnv {
   [key: string]: any;
@@ -25,17 +26,14 @@ export default (env: WebpackEnv, argv: WebpackArgv): Configuration => {
     entry: "./src/main.tsx",
     target: "web",
     context: __dirname,
-    resolveLoader: {
-      modules: [
-        path.resolve(process.cwd(), "node_modules"),
-        path.resolve(__dirname, "node_modules"),
-      ],
-    },
     output: {
       path: path.resolve(process.cwd(), "dist/client"),
-      filename: isProd ? "js/[name].[contenthash:8].js" : "bundle.js",
+      filename: isProd ? "js/[name].[contenthash:8].js" : "js/[name].js",
+      chunkFilename: isProd
+        ? "js/[name].[contenthash:8].chunk.js"
+        : "js/[name].chunk.js",
       publicPath: "/",
-      clean: isProd,
+      clean: true,
     },
     devtool: isProd ? "source-map" : "eval-cheap-module-source-map",
     resolve: {
@@ -46,12 +44,44 @@ export default (env: WebpackEnv, argv: WebpackArgv): Configuration => {
         "@shared": path.resolve(process.cwd(), "shared"),
       },
     },
+    optimization: {
+      minimize: isProd,
+      minimizer: ["...", new CssMinimizerPlugin()],
+      splitChunks: {
+        chunks: "all",
+        cacheGroups: {
+          defaultVendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name: "vendors",
+            priority: -10,
+            reuseExistingChunk: true,
+          },
+          common: {
+            name: "common",
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+      runtimeChunk: "single",
+    },
     module: {
       rules: [
         {
           test: /\.tsx?$/,
-          use: "ts-loader",
           exclude: /node_modules/,
+          use: [
+            {
+              loader: "ts-loader",
+              options: {
+                transpileOnly: !isProd,
+                compilerOptions: {
+                  module: "esnext",
+                },
+              },
+            },
+          ],
         },
         {
           test: /\.(woff|woff2|eot|ttf|otf)$/i,
@@ -62,7 +92,12 @@ export default (env: WebpackEnv, argv: WebpackArgv): Configuration => {
         },
         {
           test: /\.(png|jpg|jpeg|gif)$/i,
-          type: "asset/resource",
+          type: "asset",
+          parser: {
+            dataUrlCondition: {
+              maxSize: 4 * 1024,
+            },
+          },
           generator: {
             filename: "images/[name].[hash:8][ext]",
           },
@@ -120,6 +155,20 @@ export default (env: WebpackEnv, argv: WebpackArgv): Configuration => {
     plugins: [
       new HtmlWebpackPlugin({
         template: "./public/index.html",
+        minify: isProd
+          ? {
+              removeComments: true,
+              collapseWhitespace: true,
+              removeRedundantAttributes: true,
+              useShortDoctype: true,
+              removeEmptyAttributes: true,
+              removeStyleLinkTypeAttributes: true,
+              keepClosingSlash: true,
+              minifyJS: true,
+              minifyCSS: true,
+              minifyURLs: true,
+            }
+          : false,
       }),
       new CopyWebpackPlugin({
         patterns: [
@@ -134,6 +183,7 @@ export default (env: WebpackEnv, argv: WebpackArgv): Configuration => {
         ? [
             new MiniCssExtractPlugin({
               filename: "css/[name].[contenthash:8].css",
+              chunkFilename: "css/[name].[contenthash:8].chunk.css",
             }),
           ]
         : []),

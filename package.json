@@ -10,7 +10,7 @@
     "vercel-build": "npm run build",
     "webpack:watch": "cross-env NODE_ENV=development TS_NODE_COMPILER_OPTIONS=\"{\\\"module\\\":\\\"commonjs\\\",\\\"noEmit\\\":false,\\\"strict\\\":false,\\\"skipLibCheck\\\":true}\" webpack --config client/webpack.config.ts --mode development --watch",
     "server:watch": "cross-env NODE_ENV=development nodemon --watch server/src --ext ts --exec \"tsx --tsconfig server/tsconfig.json server/src/server.ts\"",
-    "dev": "npm run db:migrate --workspace=server && concurrently \"npm run webpack:watch\" \"npm run server:watch\""
+    "dev": "npm run db:migrate -w server && concurrently \"npm run webpack:watch\" \"npm run server:watch\""
   },
   "author": "Fazylov Mihail",
   "license": "ISC",
