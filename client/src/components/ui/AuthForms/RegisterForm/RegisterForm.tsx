@@ -16,9 +16,9 @@ import { queryClient } from "@client/api/queryClient";
 import { useNavigate } from "react-router-dom";
 import { setProfile } from "@client/app/features/profileSlice";
 import { TError } from "@shared/models/Error";
+import { Helmet } from "react-helmet-async";
 
 import "../AuthForm.scss";
-import { Helmet } from "react-helmet-async";
 
 export const RegisterForm: FC<FormHTMLAttributes<HTMLFormElement>> = (
   props,
@@ -91,3 +91,5 @@ export const RegisterForm: FC<FormHTMLAttributes<HTMLFormElement>> = (
     </>
   );
 };
+
+RegisterForm.displayName = "RegisterForm";

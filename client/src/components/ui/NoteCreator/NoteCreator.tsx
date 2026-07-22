@@ -9,9 +9,9 @@ import { Input } from "../Input";
 import { Textarea } from "../Textarea";
 import { Button } from "../Button";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 import "./NoteCreator.scss";
-import { Helmet } from "react-helmet-async";
 
 export const NoteCreator: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
   const navigate = useNavigate();
@@ -76,3 +76,5 @@ export const NoteCreator: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
     </>
   );
 };
+
+NoteCreator.displayName = "NoteCreator";

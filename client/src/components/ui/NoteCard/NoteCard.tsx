@@ -28,3 +28,5 @@ export const NoteCard: FC<NoteCardProps> = memo(
     );
   },
 );
+
+NoteCard.displayName = "NoteCard";

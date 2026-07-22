@@ -12,9 +12,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "../../Link";
 import { TError } from "@shared/models/Error";
+import { Helmet } from "react-helmet-async";
 
 import "../AuthForm.scss";
-import { Helmet } from "react-helmet-async";
 
 export const LoginForm: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
   const navigate = useNavigate();
@@ -90,3 +90,5 @@ export const LoginForm: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
     </>
   );
 };
+
+LoginForm.displayName = "LoginForm";

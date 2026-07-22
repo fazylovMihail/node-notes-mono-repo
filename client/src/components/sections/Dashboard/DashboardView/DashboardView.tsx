@@ -46,3 +46,5 @@ export function DashboardView() {
       );
   }
 }
+
+DashboardView;

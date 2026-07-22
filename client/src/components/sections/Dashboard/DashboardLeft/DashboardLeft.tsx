@@ -118,3 +118,5 @@ export const DashboardLeft = memo(
     );
   },
 );
+
+DashboardLeft.displayName = "DashboardLeft";

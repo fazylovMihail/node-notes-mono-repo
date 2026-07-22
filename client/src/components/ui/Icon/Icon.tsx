@@ -11,3 +11,5 @@ export const Icon: FC<IconProps> = ({ iconId, ...props }) => {
     </svg>
   );
 };
+
+Icon.displayName = "Input";

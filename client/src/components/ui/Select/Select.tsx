@@ -43,3 +43,5 @@ export const Select: FC<SelectProps> = ({
     </div>
   );
 };
+
+Select.displayName = "Select";

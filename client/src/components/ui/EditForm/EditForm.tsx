@@ -90,3 +90,5 @@ export const EditForm: FC<EditFormProps> = ({
     </form>
   );
 };
+
+EditForm.displayName = "EditForm";

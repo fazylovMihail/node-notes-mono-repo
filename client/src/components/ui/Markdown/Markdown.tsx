@@ -12,3 +12,5 @@ export const Markdown: FC<MarkdownProps> = ({ note }) => {
     <div className="markdown" dangerouslySetInnerHTML={{ __html: note }} />
   );
 };
+
+Markdown.displayName = "Markdown";

@@ -35,3 +35,5 @@ export const Button: FC<ButtonProps> = ({
     </button>
   );
 };
+
+Button.displayName = "Button";

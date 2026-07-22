@@ -40,3 +40,5 @@ export const Link: FC<LinkProps> = ({
     </RouterLink>
   );
 };
+
+Link.displayName = "Link";

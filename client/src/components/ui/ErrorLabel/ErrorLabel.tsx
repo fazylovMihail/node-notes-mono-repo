@@ -7,3 +7,5 @@ interface ErrorLabelProps {
 export const ErrorLabel: FC<ErrorLabelProps> = ({ message }) => {
   return <div className="error-label">{message}</div>;
 };
+
+ErrorLabel.displayName = "ErrorLabel";

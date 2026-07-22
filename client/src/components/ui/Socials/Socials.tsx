@@ -32,3 +32,5 @@ export const Socials: FC<SocialsProps> = ({
     </ul>
   );
 };
+
+Socials.displayName = "Socials";
