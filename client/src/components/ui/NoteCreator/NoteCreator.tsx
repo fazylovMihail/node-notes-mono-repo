@@ -11,6 +11,7 @@ import { Button } from "../Button";
 import { useNavigate } from "react-router-dom";
 
 import "./NoteCreator.scss";
+import { Helmet } from "react-helmet-async";
 
 export const NoteCreator: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
   const navigate = useNavigate();
@@ -36,29 +37,42 @@ export const NoteCreator: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
   };
 
   return (
-    <form className="note-creator" onSubmit={handleSubmit(onSubmit)} {...props}>
-      <div className="container">
-        <div className="note-creator__content">
-          <h2 className="note-creator__heading">Создать заметку</h2>
-          <Input
-            {...register("title")}
-            modificators={["create"]}
-            labelText="Название"
-            id="input-title-note"
-            isRequire
-            errorText={errors.title?.message}
-          />
-          <Textarea
-            {...register("content")}
-            modificators={["create"]}
-            labelText="Контент"
-            id="input-edit-note"
-          />
-          <Button modificators={["center"]} type="submit" disabled={isPending}>
-            {isPending ? "Создание..." : "Создать"}
-          </Button>
+    <>
+      <Helmet>
+        <title>Создать заметку | Заметки</title>
+      </Helmet>
+      <form
+        className="note-creator"
+        onSubmit={handleSubmit(onSubmit)}
+        {...props}
+      >
+        <div className="container">
+          <div className="note-creator__content">
+            <h2 className="note-creator__heading">Создать заметку</h2>
+            <Input
+              {...register("title")}
+              modificators={["create"]}
+              labelText="Название"
+              id="input-title-note"
+              isRequire
+              errorText={errors.title?.message}
+            />
+            <Textarea
+              {...register("content")}
+              modificators={["create"]}
+              labelText="Контент"
+              id="input-edit-note"
+            />
+            <Button
+              modificators={["center"]}
+              type="submit"
+              disabled={isPending}
+            >
+              {isPending ? "Создание..." : "Создать"}
+            </Button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </>
   );
 };

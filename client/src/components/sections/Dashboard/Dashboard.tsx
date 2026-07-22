@@ -27,7 +27,6 @@ import "./Dashboard.scss";
 type SearchData = {
   sort: "month" | "three-month" | "all-time";
   search: string;
-  isArchive: boolean;
 };
 
 export function Dashboard() {
@@ -43,7 +42,6 @@ export function Dashboard() {
   const [searchData, setSearchData] = useState<SearchData>({
     sort: "all-time",
     search: "",
-    isArchive,
   });
 
   const handleSearch = useCallback((data: SearchData) => {
@@ -55,14 +53,12 @@ export function Dashboard() {
       isArchive ? "archive_notes" : "notes",
       searchData.sort,
       searchData.search,
-      isArchive,
     ],
     queryFn: async ({ pageParam = 1 }) => {
-      const params = { ...searchData, page: pageParam, limit: 20 } as any;
-      const response = isArchive
+      const params = { ...searchData, isArchive, page: pageParam, limit: 20 };
+      return isArchive
         ? await fetchArchiveNotesList(params)
         : await fetchNotesList(params);
-      return response as any;
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
@@ -90,7 +86,6 @@ export function Dashboard() {
   });
 
   const selectedNote = noteQuery.data ?? null;
-
   const combinedNotes =
     notesQuery.data?.pages.flatMap((page) => page.data || []) ?? [];
 
@@ -123,8 +118,11 @@ export function Dashboard() {
   const handleCloseNoteCreator = useCallback(() => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
-      params.delete("create");
-      return params;
+      if (params.has("create")) {
+        params.delete("create");
+        return params;
+      }
+      return prev;
     });
   }, [setSearchParams]);
 
@@ -134,10 +132,19 @@ export function Dashboard() {
   );
 
   useEffect(() => {
-    if (!isNoteCreatorOpen || isArchive) {
+    if (isNoteCreatorOpen && isArchive) {
       handleCloseNoteCreator();
     }
   }, [isNoteCreatorOpen, isArchive, handleCloseNoteCreator]);
+
+  useEffect(() => {
+    const prefix = isArchive ? "Архив" : "";
+    const content = selectedNote
+      ? ` ${isEdit ? "✏️ Редактирование" : "📄"} «${selectedNote.title || "Без названия"}»`
+      : "Главная";
+
+    document.title = `${prefix}${prefix && content === "Главная" ? "" : content} | Заметки`;
+  }, [isArchive, selectedNote, isEdit]);
 
   if (notesQuery.status === "error") {
     return <ErrorLabel message={notesQuery.error.message} />;

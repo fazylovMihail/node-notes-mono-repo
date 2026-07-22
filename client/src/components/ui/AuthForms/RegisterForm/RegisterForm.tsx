@@ -18,6 +18,7 @@ import { setProfile } from "@client/app/features/profileSlice";
 import { TError } from "@shared/models/Error";
 
 import "../AuthForm.scss";
+import { Helmet } from "react-helmet-async";
 
 export const RegisterForm: FC<FormHTMLAttributes<HTMLFormElement>> = (
   props,
@@ -54,34 +55,39 @@ export const RegisterForm: FC<FormHTMLAttributes<HTMLFormElement>> = (
   };
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit(onSubmit)} {...props}>
-      <h1 className="auth-form__heading">Регистрация</h1>
-      <div className="auth-form__content">
-        <Input
-          type="text"
-          id="input-username"
-          labelText="Имя"
-          autoComplete="off"
-          {...register("username")}
-          isRequire
-          errorText={errors.username?.message}
-        />
-        <Input
-          type="password"
-          id="input-password"
-          labelText="Пароль"
-          autoComplete="new-password"
-          {...register("password")}
-          isRequire
-          errorText={errors.password?.message}
-        />
-        <Button type="submit" disabled={registerMutate.isPending}>
-          {registerMutate.isPending ? "Регистрация..." : "Регистрация"}
-        </Button>
-      </div>
-      <Link to={"/login"} modificators={[`auth-form__bottom-link`]}>
-        Уже есть аккаунт
-      </Link>
-    </form>
+    <>
+      <Helmet>
+        <title>Регистрация | Заметки</title>
+      </Helmet>
+      <form className="auth-form" onSubmit={handleSubmit(onSubmit)} {...props}>
+        <h1 className="auth-form__heading">Регистрация</h1>
+        <div className="auth-form__content">
+          <Input
+            type="text"
+            id="input-username"
+            labelText="Имя"
+            autoComplete="off"
+            {...register("username")}
+            isRequire
+            errorText={errors.username?.message}
+          />
+          <Input
+            type="password"
+            id="input-password"
+            labelText="Пароль"
+            autoComplete="new-password"
+            {...register("password")}
+            isRequire
+            errorText={errors.password?.message}
+          />
+          <Button type="submit" disabled={registerMutate.isPending}>
+            {registerMutate.isPending ? "Регистрация..." : "Регистрация"}
+          </Button>
+        </div>
+        <Link to={"/login"} modificators={[`auth-form__bottom-link`]}>
+          Уже есть аккаунт
+        </Link>
+      </form>
+    </>
   );
 };

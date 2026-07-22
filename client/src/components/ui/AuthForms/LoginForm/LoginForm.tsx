@@ -14,6 +14,7 @@ import { Link } from "../../Link";
 import { TError } from "@shared/models/Error";
 
 import "../AuthForm.scss";
+import { Helmet } from "react-helmet-async";
 
 export const LoginForm: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
   const navigate = useNavigate();
@@ -52,35 +53,40 @@ export const LoginForm: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
   };
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit(onSubmit)} {...props}>
-      <h1 className="auth-form__heading">Вход</h1>
+    <>
+      <Helmet>
+        <title>Вход | Заметки</title>
+      </Helmet>
+      <form className="auth-form" onSubmit={handleSubmit(onSubmit)} {...props}>
+        <h1 className="auth-form__heading">Вход</h1>
 
-      <div className="auth-form__content">
-        <Input
-          type="text"
-          id="input-username"
-          labelText="Имя"
-          autoComplete="off"
-          {...register("username")}
-          isRequire
-          errorText={errors.username?.message}
-        />
-        <Input
-          type="password"
-          id="input-password"
-          labelText="Пароль"
-          autoComplete="new-password"
-          {...register("password")}
-          isRequire
-          errorText={errors.password?.message}
-        />
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Вход..." : "Войти"}
-        </Button>
-      </div>
-      <Link to={"/register"} modificators={[`auth-form__bottom-link`]}>
-        Нет аккаунта
-      </Link>
-    </form>
+        <div className="auth-form__content">
+          <Input
+            type="text"
+            id="input-username"
+            labelText="Имя"
+            autoComplete="off"
+            {...register("username")}
+            isRequire
+            errorText={errors.username?.message}
+          />
+          <Input
+            type="password"
+            id="input-password"
+            labelText="Пароль"
+            autoComplete="new-password"
+            {...register("password")}
+            isRequire
+            errorText={errors.password?.message}
+          />
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Вход..." : "Войти"}
+          </Button>
+        </div>
+        <Link to={"/register"} modificators={[`auth-form__bottom-link`]}>
+          Нет аккаунта
+        </Link>
+      </form>
+    </>
   );
 };

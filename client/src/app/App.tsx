@@ -64,19 +64,18 @@ export default function App() {
                 isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />
               }
             >
+              <Route index element={null} />
               <Route path=":id" element={<DashboardView />} />
               <Route path=":id/edit" element={<DashboardEdit />} />
+
+              <Route path="archive">
+                <Route index element={null} />
+                <Route path=":id" element={<DashboardView />} />
+                <Route path=":id/edit" element={<DashboardEdit />} />
+              </Route>
             </Route>
 
-            <Route
-              path="/dashboard/archive"
-              element={
-                isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />
-              }
-            >
-              <Route path=":id" element={<DashboardView />} />
-              <Route path=":id/edit" element={<DashboardEdit />} />
-            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         )}
       </main>

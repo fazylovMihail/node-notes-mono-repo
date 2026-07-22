@@ -1,5 +1,11 @@
 import { memo } from "react";
-import { Button, NoteCard, SearchForm, Link } from "@client/components/ui";
+import {
+  Button,
+  NoteCard,
+  SearchForm,
+  Link,
+  Loader,
+} from "@client/components/ui";
 import { ArchiveNotesList } from "@shared/models/ArchiveNote";
 import { Note, NoteList } from "@shared/models/Note";
 
@@ -81,7 +87,9 @@ export const DashboardLeft = memo(
         <SearchForm isArchive={isArchive} onSearch={onSearch} />
 
         {isLoading && notes.length === 0 ? (
-          <div className="dashboard__loading">Загрузка...</div>
+          <Loader />
+        ) : notes.length === 0 ? (
+          <div className="dashboard__no-results">Ничего не найдено</div>
         ) : (
           <ul className="dashboard__notes">
             {notes.map((note) => (
@@ -96,7 +104,7 @@ export const DashboardLeft = memo(
           </ul>
         )}
 
-        {page < totalPages && (
+        {page < totalPages && notes.length > 0 && (
           <Button
             type="button"
             modificators={["forest-wolf-transparent", "more"]}
