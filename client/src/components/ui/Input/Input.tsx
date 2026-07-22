@@ -26,31 +26,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       isRequire = false,
       isSearch = false,
       onReset,
-      onKeyDown,
       ...props
     },
     ref,
   ) => {
     const classNames = createClassNames("custom-input", modificators);
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-      }
-      if (onKeyDown) {
-        onKeyDown(e);
-      }
-    };
-
     return (
       <div className={classNames}>
-        <input
-          {...props}
-          ref={ref}
-          className="custom-input__field"
-          id={id}
-          onKeyDown={handleKeyDown}
-        />
+        <input {...props} ref={ref} className="custom-input__field" id={id} />
         {iconId && (
           <Icon
             className="custom-input__icon"

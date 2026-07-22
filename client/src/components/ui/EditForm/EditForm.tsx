@@ -1,4 +1,4 @@
-import { FC, FormHTMLAttributes, KeyboardEventHandler } from "react";
+import { FC, FormHTMLAttributes, KeyboardEvent, useCallback } from "react";
 import { Textarea } from "../Textarea";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Note, UpdateNote, UpdateNoteSchema } from "@shared/models/Note";
@@ -23,7 +23,11 @@ export const EditForm: FC<EditFormProps> = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const { register, handleSubmit } = useForm<UpdateNote>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UpdateNote>({
     resolver: zodResolver(UpdateNoteSchema),
     defaultValues: {
       title: note.title,
@@ -37,50 +41,46 @@ export const EditForm: FC<EditFormProps> = ({
         ? fetchEditArchiveNote(note.note_id, data)
         : fetchEditNote(note.note_id, data),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [isArchive ? "archive_notes" : "notes"],
-      });
-
-      await queryClient.invalidateQueries({
-        queryKey: ["note_html_content", note.note_id],
-        exact: false,
-      });
-
-      await queryClient.invalidateQueries({
-        queryKey: ["note_by_id", note.note_id, isArchive],
-        exact: false,
-      });
-
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: [isArchive ? "archive_notes" : "notes"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["note_html_content", note.note_id],
+          exact: false,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["note_by_id", note.note_id, isArchive],
+          exact: false,
+        }),
+      ]);
       onCloseEditForm();
     },
   });
 
-  const onSubmit: SubmitHandler<UpdateNote> = (data) => {
-    editMutation.mutate(data);
-  };
+  const onSubmit: SubmitHandler<UpdateNote> = useCallback(
+    (data) => {
+      editMutation.mutate(data);
+    },
+    [editMutation],
+  );
 
-  const handleKeyDown: KeyboardEventHandler<HTMLFormElement> = (event) => {
-    if (event.key === "Enter") {
-      const target = event.target as HTMLElement;
-      if (target.tagName === "INPUT") {
-        event.preventDefault();
-      }
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
     }
   };
 
   return (
-    <form
-      className="edit-form"
-      onSubmit={handleSubmit(onSubmit)}
-      onKeyDown={handleKeyDown}
-      {...props}
-    >
+    <form className="edit-form" onSubmit={handleSubmit(onSubmit)} {...props}>
       <Input
         {...register("title")}
         modificators={["edit"]}
         labelText="Название"
         id="input-title-note"
         isRequire
+        errorText={errors.title?.message}
+        onKeyDown={handleKeyDown}
       />
       <Textarea
         {...register("content")}
