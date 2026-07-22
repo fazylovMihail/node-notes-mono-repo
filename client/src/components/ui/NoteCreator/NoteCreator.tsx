@@ -15,7 +15,11 @@ import "./NoteCreator.scss";
 export const NoteCreator: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
   const navigate = useNavigate();
 
-  const { register, handleSubmit } = useForm<CreateNote>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateNote>({
     resolver: zodResolver(CreateNoteSchema),
   });
 
@@ -42,6 +46,7 @@ export const NoteCreator: FC<FormHTMLAttributes<HTMLFormElement>> = (props) => {
             labelText="Название"
             id="input-title-note"
             isRequire
+            errorText={errors.title?.message}
           />
           <Textarea
             {...register("content")}
