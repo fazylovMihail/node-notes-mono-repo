@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import { validateSession } from "./middlewares";
 import apiRoute from "./routes";
 import path from "path";
+import { initBackgroundTasks } from "./cron";
 
 const CLIENT_DIST_PATH = path.resolve(__dirname, "../../dist/client");
 
@@ -34,5 +35,7 @@ if (process.env.NODE_ENV !== "production") {
     console.log(`   Server listen on http://localhost:${PORT}`);
   });
 }
+
+initBackgroundTasks();
 
 export default app;
